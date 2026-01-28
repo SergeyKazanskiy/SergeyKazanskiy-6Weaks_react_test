@@ -1,0 +1,31 @@
+/* ===== Light theme ====== */
+
+:root[data-theme="light"] {
+
+    --bg-gradient-start: #eef3ff;   /* философский голубовато-фиолетовый */
+    --bg-gradient-middle: #d9ecff;  /* небо, надежда */
+    --bg-gradient-end: #edf7ed;     /* мягкий зелёный */
+  
+    --bg-page: linear-gradient(
+      180deg,
+      var(--bg-gradient-start),
+      var(--bg-gradient-middle),
+      var(--bg-gradient-end)
+    );
+}
+
+/* ===== Dark theme ====== */
+
+:root[data-theme="dark"] {
+
+    --bg-gradient-start: #1b1f3b;   /* индиго, философия */
+    --bg-gradient-middle: #233a5e; /* ночное небо */
+    --bg-gradient-end: #1f2d26;    /* тёмный зелёный — надёжность */
+  
+    --bg-page: linear-gradient(
+      180deg,
+      var(--bg-gradient-start),
+      var(--bg-gradient-middle),
+      var(--bg-gradient-end)
+    );
+}

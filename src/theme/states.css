@@ -1,0 +1,19 @@
+/* ===== Light theme ====== */
+
+:root[data-theme="light"] {
+
+  --state-success: #22c55e;
+  --state-warning: #f59e0b;
+  --state-error: #ef4444;
+  --state-info: #0ea5e9;
+}
+
+/* ===== Dark theme ====== */
+
+:root[data-theme="dark"] {
+
+  --state-success: #4ade80;
+  --state-warning: #fbbf24;
+  --state-error: #f87171;
+  --state-info: #38bdf8;
+}

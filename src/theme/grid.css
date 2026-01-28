@@ -1,0 +1,15 @@
+/* ===== Light theme ====== */
+
+:root[data-theme="light"] {
+
+  --grid-line: rgba(15, 23, 42, 0.08);
+  --grid-bg: rgba(255, 255, 255, 0.6);
+}
+
+/* ===== Dark theme ====== */
+
+:root[data-theme="dark"] {
+
+  --grid-line: rgba(148, 163, 184, 0.18);
+  --grid-bg: rgba(2, 6, 23, 0.65);
+}

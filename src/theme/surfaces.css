@@ -1,0 +1,21 @@
+/* ===== Light theme ====== */
+
+:root[data-theme="light"] {
+
+  --bg-surface: rgba(255, 255, 255, 0.85);
+  --bg-surface-solid: #ffffff;
+  --bg-surface-muted: #f4f6fb;
+
+  --border-surface: rgba(15, 23, 42, 0.08);
+}
+
+/* ===== Dark theme ====== */
+
+:root[data-theme="dark"] {
+
+  --bg-surface: rgba(30, 41, 59, 0.75);
+  --bg-surface-solid: #1e293b;
+  --bg-surface-muted: #0f172a;
+
+  --border-surface: rgba(148, 163, 184, 0.18);
+}

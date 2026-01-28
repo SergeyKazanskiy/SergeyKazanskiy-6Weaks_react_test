@@ -1,0 +1,17 @@
+/* ===== Light theme ====== */
+
+:root[data-theme="light"] {
+
+  --control-bg: #ffffff;
+  --control-border: #d1d5db;
+  --control-focus: #93c5fd;
+}
+
+/* ===== Dark theme ====== */
+
+:root[data-theme="dark"] {
+
+  --control-bg: #020617;
+  --control-border: #334155;
+  --control-focus: #60a5fa;
+}
