@@ -1,0 +1,104 @@
+/* =========================
+   Design tokens
+   ========================= */
+
+   :root {
+    --bg: #ffffff;
+    --fg: #111827;
+    --border: #d1d5db;
+    --border-required: #6366f1;
+    --border-error: #dc2626;
+    --border-success: #16a34a;
+    --focus: #2563eb;
+  }
+  
+  html.dark {
+    --bg: #0f172a;
+    --fg: #e5e7eb;
+    --border: #334155;
+  }
+  
+  /* =========================
+     Form container
+     ========================= */
+  
+  .login-form {
+    background: var(--bg);
+    color: var(--fg);
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    width: 100%;
+    max-width: 24rem;
+    display: grid;
+    gap: 1rem;
+  }
+  
+  /* =========================
+     Fields
+     ========================= */
+  
+  .login-form input,
+  .login-form textarea {
+    font: inherit;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: inherit;
+  }
+  
+  /* required fields */
+  .login-form input:required,
+  .login-form textarea:required {
+    border-color: var(--border-required);
+  }
+  
+  /* invalid */
+  .login-form input:required:invalid {
+    border-color: var(--border-error);
+  }
+  
+  /* valid */
+  .login-form input:required:valid {
+    border-color: var(--border-success);
+  }
+  
+  /* focus */
+  .login-form input:focus,
+  .login-form textarea:focus {
+    outline: none;
+    border-color: var(--focus);
+  }
+  
+  /* =========================
+     Button
+     ========================= */
+  
+  .login-form button {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+    background: var(--fg);
+    color: var(--bg);
+    border: none;
+    cursor: pointer;
+  }
+  
+  .login-form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  /* =========================
+     Tooltip
+     ========================= */
+  
+  .login-tooltip {
+    margin-top: 0.25rem;
+    font-size: 0.875rem;
+    color: #fff;
+    background: var(--border-error);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+  }
+  
