@@ -1,38 +1,20 @@
-import nodemailer from 'nodemailer'
 
-
-type SendEmailParams = {
+interface SendEmailPayload {
   subject: string
   html: string
 }
 
-class EmailService {
-  private transporter
-
-  constructor() {
-    this.transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
+export const emailClient = {
+  async send(payload: SendEmailPayload) {
+    const res = await fetch('/api/routes/email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     })
-  }
 
-  async send({ subject, html }: SendEmailParams) {
-    if (!process.env.TO_EMAIL) {
-      throw new Error('TO_EMAIL is not defined')
+    if (!res.ok) {
+      throw new Error('Email sending failed')
     }
-
-    await this.transporter.sendMail({
-      from: `"Next Login Demo" <${process.env.SMTP_USER}>`,
-      to: process.env.TO_EMAIL,
-      subject,
-      html,
-    })
-  }
+  },
 }
 
-export const emailService = new EmailService()

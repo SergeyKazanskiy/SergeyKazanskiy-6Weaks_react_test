@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { LoginFormModel } from './model'
-import { emailService } from '../../services/email/service';
+import { emailClient } from '../../services/email/service';
 import { loginEmailTemplate } from '../../services/email/templates';
 
 
@@ -38,14 +38,21 @@ export const useLoginStore = create<LoginState>((set) => ({
   async submit(model) {
     set({ loading: true, errors: {} })
    
-    const loginHtmL = loginEmailTemplate(model);
-    emailService.send({ subject: '6weeks - Форма заповнена', html: loginHtmL });
+    try {
+      const html = loginEmailTemplate(model)
+      await emailClient.send({ subject: '6weeks — Форма заполнена', html})
+      set({ success: true })
+    } catch (e) {
+      set({ errors: { email: 'Failed to send email' } })
+    } finally {
+      set({ loading: false })
+    }
 
      // имитация API вызова
-    await new Promise(res => setTimeout(res, 1000))
+    //await new Promise(res => setTimeout(res, 1000))
 
-    set({ loading: false, success: true })
-    setTimeout(() => set({ success: false }), 2000)
+    //set({ loading: false, success: true })
+    setTimeout(() => set({ success: false, errors: {} }), 3000)
   },
 
   reset() {
