@@ -1,8 +1,6 @@
 export type LoginEmailData = {
+  name: string
   email: string
-  password?: string
-  ip?: string
-  userAgent?: string
-  createdAt: string
+  description: string
 }
   

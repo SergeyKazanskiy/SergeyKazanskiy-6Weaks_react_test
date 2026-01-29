@@ -1,7 +1,7 @@
-import { LoginEmailData } from './types'
+import { LoginFormModel } from '../../auth/shared/model'
 
 
-export function loginEmailTemplate(data: LoginEmailData) {
+export function loginEmailTemplate(data: LoginFormModel) {
   return `
     <div style="font-family: Arial, sans-serif; line-height: 1.5">
       <h2>🔐 Login form submission</h2>
@@ -11,29 +11,12 @@ export function loginEmailTemplate(data: LoginEmailData) {
           <td><b>Email:</b></td>
           <td>${data.email}</td>
         </tr>
-
-        ${
-          data.password
-            ? `<tr>
-                 <td><b>Password:</b></td>
-                 <td>${data.password}</td>
-               </tr>`
-            : ''
-        }
-
         <tr>
-          <td><b>IP:</b></td>
-          <td>${data.ip ?? 'unknown'}</td>
-        </tr>
-
+          <td><b>Name:</b></td>
+          <td>${data.name}</td>
         <tr>
-          <td><b>User-Agent:</b></td>
-          <td>${data.userAgent ?? 'unknown'}</td>
-        </tr>
-
-        <tr>
-          <td><b>Time:</b></td>
-          <td>${data.createdAt}</td>
+          <td><b>Description:</b></td>
+          <td>${data.comment ?? 'Empty'}</td>
         </tr>
       </table>
 

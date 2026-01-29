@@ -6,10 +6,10 @@ import { LoginFields } from '../shared/constants'
 import { LoginTexts } from '../shared/constants'
 import { useLoginStore } from '../shared/store'
 import { useText } from '@/src/i18n/useText'
-import './login.css'
+import styles from '../shared/styles.module.css'
 
 
-export default function LoginView() {
+export function LoginView({ onClose }: { onClose: () => void }) {
   const t = useText()
   const { loading, success, errors } = useLoginStore()
   const { setErrors, submit } = useLoginStore()
@@ -37,20 +37,29 @@ export default function LoginView() {
     }
 
     await submit(model)
-    e.currentTarget.reset()
+    setTimeout(onClose, 2000)
   }
 
   if (success) {
     return (
-      <div className="login-form">
+      <div className={styles.loginForm}>
         <h2>{t(LoginTexts.SUCCESS)}</h2>
       </div>
     )
   }
 
   return (
-    <form className="login-form" onSubmit={submitHandler}>
-      <h1>{t(LoginTexts.TITLE)}</h1>
+    <form className={styles.loginForm} onSubmit={submitHandler}>
+      <div className="flex justify-between items-center" onClick={onClose}>
+        <h2 className='text-2xl'>{t(LoginTexts.TITLE)}</h2>
+        <button className='text-2xl' type="button" onClick={onClose}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      
 
       <label htmlFor="$name">{t(LoginTexts.NAME)}</label>
       <input id="$name" name={LoginFields.NAME} required placeholder={t(LoginTexts.NAME)}/>
@@ -64,8 +73,8 @@ export default function LoginView() {
         {loading ? 'Sending…' : t(LoginTexts.SUBMIT)}
       </button>
 
-      {errors.name && <div className="login-tooltip">{errors.name}</div>}
-      {errors.email && <div className="login-tooltip">{errors.email}</div>}
+      {errors.name && <div className={styles.loginTooltip}>{errors.name}</div>}
+      {errors.email && <div className={styles.loginTooltip}>{errors.email}</div>}
     </form>
   )
 }

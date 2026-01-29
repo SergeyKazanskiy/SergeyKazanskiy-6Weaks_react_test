@@ -10,9 +10,9 @@ export default function Home() {
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
       <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">{t(NavLinks.HOME)}</h1>
+        <h1 className="text-4xl font-bold mb-4">{t(NavLinks.DOCS)}</h1>
         <p className="text-lg text-gray-600">
-          {t('Welcome to the home page! Use the navigation bar to explore the app.')}
+          {t('Documentation page content goes here.')}
         </p>
       </div>
     </div>

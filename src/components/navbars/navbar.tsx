@@ -41,8 +41,10 @@ export function Navbar() {
 
       {/* right */}
       <div className="flex gap-3">
+        <Link href="/login" className={`px-4 py-2 rounded transition}`} onClick={showLogin}>
+          login
+        </Link>
         <button onClick={toggleTheme}>🌓</button>
-        <button onClick={showLogin}>Войти</button>
       </div>
     </nav>
   )
