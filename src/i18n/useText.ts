@@ -3,10 +3,7 @@ import { en } from './lang/en'
 import { ru } from './lang/ru'
 
 
-const dictionary: Record<Lang, Record<string, string>> = {
-    en,
-    ru,
-  }
+const dictionary: Record<Lang, Record<string, string>> = { en, ru }
 
 export function useText() {
   const lang = useLangStore(s => s.lang)

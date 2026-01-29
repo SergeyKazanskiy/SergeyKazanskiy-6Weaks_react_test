@@ -10,7 +10,7 @@ import './login.css'
 
 
 export default function LoginView() {
-  const text = useText()
+  const t = useText()
   const { loading, success, errors } = useLoginStore()
   const { setErrors, submit } = useLoginStore()
 
@@ -43,25 +43,25 @@ export default function LoginView() {
   if (success) {
     return (
       <div className="login-form">
-        <h2>{text(LoginTexts.SUCCESS)}</h2>
+        <h2>{t(LoginTexts.SUCCESS)}</h2>
       </div>
     )
   }
 
   return (
     <form className="login-form" onSubmit={submitHandler}>
-      <h1>{text(LoginTexts.TITLE)}</h1>
+      <h1>{t(LoginTexts.TITLE)}</h1>
 
-      <label htmlFor="$name">{text(LoginTexts.NAME)}</label>
-      <input id="$name" name={LoginFields.NAME} required placeholder={text(LoginTexts.NAME)}/>
+      <label htmlFor="$name">{t(LoginTexts.NAME)}</label>
+      <input id="$name" name={LoginFields.NAME} required placeholder={t(LoginTexts.NAME)}/>
 
-      <label htmlFor="$email">{text(LoginTexts.EMAIL)}</label>
-      <input id="$email" name={LoginFields.EMAIL} required placeholder={text(LoginTexts.EMAIL)}/>
+      <label htmlFor="$email">{t(LoginTexts.EMAIL)}</label>
+      <input id="$email" name={LoginFields.EMAIL} required placeholder={t(LoginTexts.EMAIL)}/>
 
-      <textarea name={LoginFields.COMMENT} placeholder={text(LoginTexts.COMMENT)}/>
+      <textarea name={LoginFields.COMMENT} placeholder={t(LoginTexts.COMMENT)}/>
 
       <button type="submit" disabled={loading}>
-        {loading ? 'Sending…' : text(LoginTexts.SUBMIT)}
+        {loading ? 'Sending…' : t(LoginTexts.SUBMIT)}
       </button>
 
       {errors.name && <div className="login-tooltip">{errors.name}</div>}

@@ -3,19 +3,26 @@ import { LoginFormModel } from './model'
 
 
 interface LoginState {
+  loginShown: boolean
   loading: boolean
   success: boolean
   errors: Partial<Record<keyof LoginFormModel, string>>
 
+  showLogin: () => void
   setErrors: (errors: Partial<Record<keyof LoginFormModel, string>>) => void
   submit(model: LoginFormModel): Promise<void>
   reset(): void
 }
 
 export const useLoginStore = create<LoginState>((set) => ({
+  loginShown: false,
   loading: false,
   success: false,
   errors: {},
+
+  showLogin() {
+    set({ loginShown: true })
+  },
 
   setErrors(errors) {
     set({ errors })
