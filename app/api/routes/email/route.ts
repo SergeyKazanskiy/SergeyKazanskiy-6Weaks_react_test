@@ -38,6 +38,7 @@ export async function POST(req: Request) {
       html,
     })
 
+    console.log('[EMAIL_SENT]')
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('[EMAIL_ERROR]', error)
