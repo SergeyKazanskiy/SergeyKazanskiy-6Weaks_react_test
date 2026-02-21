@@ -1,12 +1,16 @@
-import * as React from 'react';
 
-export interface IAppProps {
+
+
+type Props = {
+  title: string
 }
 
-export function App2 (props: IAppProps) {
+export function Section1({ title }: Props) {
   return (
     <div>
       
     </div>
   );
 }
+
+

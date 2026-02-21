@@ -1,5 +1,4 @@
-'use client';
-
+// Server
 import * as React from 'react';
 
 export interface IAppProps {
