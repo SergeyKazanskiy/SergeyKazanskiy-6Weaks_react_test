@@ -12,7 +12,7 @@ interface SelectFieldProps
   extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
   options: Option[];
-  size?: SelectSize;
+  sz?: SelectSize;
   error?: string;
   helperText?: string;
   w1?: string;
@@ -22,7 +22,7 @@ interface SelectFieldProps
 export const SelectField: React.FC<SelectFieldProps> = ({
   label,
   options,
-  size = "md",
+  sz = "md",
   error,
   helperText,
   w1,
@@ -42,7 +42,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
 
       <div className="input-wrapper" style={{ width: w2 }}>
         <select id={selectId} className={clsx(
-            "select",`select-${size}`, error && "select-error",className
+            "select",`select-${sz}`, error && "select-error",className
           )}
           aria-invalid={!!error}
           aria-describedby={

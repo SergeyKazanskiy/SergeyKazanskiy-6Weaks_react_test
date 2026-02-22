@@ -7,7 +7,7 @@ type InputSize = "sm" | "md" | "lg";
 interface InputFieldProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  size?: InputSize;
+  sz?: InputSize; // размер input (например "sm", "md", "lg" или число для кастомного размера)
   error?: string;          // текст ошибки
   helperText?: string;
   w1?: string;             // ширина label (например "150px" или "30%")
@@ -16,7 +16,7 @@ interface InputFieldProps
 
 export const InputField: React.FC<InputFieldProps> = ({
   label,
-  size = "md",
+  sz = "md",
   error,
   helperText,
   w1,
@@ -43,7 +43,7 @@ export const InputField: React.FC<InputFieldProps> = ({
           id={inputId}
           className={clsx(
             "input",
-            `input-${size}`,
+            `input-${sz}`,
             error && "input-error",
             className
           )}

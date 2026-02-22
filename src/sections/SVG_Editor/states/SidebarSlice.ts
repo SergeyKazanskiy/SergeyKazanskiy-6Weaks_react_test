@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { LibraryElement } from '../types';
+import { LibraryElement } from '../models';
 
 
 export interface SidebarSlice {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../store';
-import { LibraryElement } from '../types';
+import { LibraryElement } from '../models';
 
 export const ComponentList: React.FC = () => {
   const { symbols, nodes, templates, activeElementId, selectElement, copyElement } = useStore();
