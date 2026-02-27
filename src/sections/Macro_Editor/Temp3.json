@@ -1,0 +1,11 @@
+[
+  {
+    "equipment_name": "Насосная станция №1",
+    "motors": [
+      { "id_scheme": "uuid-1", "power": 5.5, "label": "Основной" },
+      { "id_scheme": "uuid-2", "power": 2.2, "label": "Вспомогательный" }
+    ]
+  }
+]
+
+  

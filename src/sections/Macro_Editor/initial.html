@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Конструктор Макросов</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #141720;
+    --surface2: #1c2030;
+    --surface3: #232840;
+    --border: #2a3050;
+    --border2: #3a4570;
+    --accent: #4f8ef7;
+    --accent2: #7b5cf7;
+    --green: #3ecf8e;
+    --yellow: #f7b94f;
+    --red: #f7564f;
+    --text: #e2e8f8;
+    --text2: #8a9bc5;
+    --text3: #5a6890;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-shrink: 0;
+  }
+
+  .logo {
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--accent);
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--text3); }
+
+  .header-tabs {
+    display: flex;
+    gap: 2px;
+    margin-left: 10px;
+  }
+  .header-tab {
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .header-tab:hover { background: var(--surface3); color: var(--text); }
+  .header-tab.active { background: var(--accent); color: #fff; }
+
+  .header-right { margin-left: auto; display: flex; gap: 8px; }
+
+  .btn {
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--sans);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #6fa3ff; }
+  .btn-green { background: var(--green); color: #0a1a10; }
+  .btn-green:hover { background: #5edfa8; }
+
+  /* MAIN LAYOUT */
+  .main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* LEFT PALETTE */
+  .palette {
+    width: 220px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+
+  .palette-section {
+    padding: 14px 12px 8px;
+  }
+  .palette-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text3);
+    margin-bottom: 8px;
+    padding: 0 4px;
+  }
+
+  .palette-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    cursor: grab;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    border: 1px solid transparent;
+    margin-bottom: 2px;
+    transition: all .15s;
+    user-select: none;
+  }
+  .palette-item:hover {
+    background: var(--surface3);
+    color: var(--text);
+    border-color: var(--border);
+  }
+  .palette-item:active { cursor: grabbing; }
+
+  .pi-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .pi-loop { background: rgba(79,142,247,.15); }
+  .pi-cond { background: rgba(247,185,79,.15); }
+  .pi-assign { background: rgba(62,207,142,.15); }
+  .pi-log { background: rgba(123,92,247,.15); }
+  .pi-break { background: rgba(247,86,79,.15); }
+
+  /* CANVAS */
+  .canvas-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .canvas-toolbar {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+  .canvas-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text2);
+    margin-right: 6px;
+  }
+
+  .canvas {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+    background:
+      linear-gradient(rgba(79,142,247,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,142,247,.025) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .canvas-drop-hint {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 40px;
+    text-align: center;
+    color: var(--text3);
+    font-size: 14px;
+    max-width: 480px;
+  }
+  .canvas-drop-hint span { font-size: 36px; display: block; margin-bottom: 12px; }
+
+  /* BLOCKS */
+  .block-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 40px;
+  }
+  .block-list.drag-over {
+    outline: 2px dashed var(--accent);
+    outline-offset: 4px;
+    border-radius: 6px;
+  }
+
+  .block {
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    overflow: hidden;
+    transition: all .15s;
+    animation: blockIn .2s ease;
+  }
+  @keyframes blockIn {
+    from { opacity:0; transform:translateY(-8px); }
+    to { opacity:1; transform:translateY(0); }
+  }
+  .block:hover { border-color: var(--border2); }
+
+  .block-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    cursor: default;
+  }
+  .block-badge {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+  .block-delete {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0 4px;
+    line-height: 1;
+    transition: color .15s;
+  }
+  .block-delete:hover { color: var(--red); }
+
+  .block-body { padding: 10px 14px 12px; }
+
+  /* LOOP BLOCK */
+  .block-loop { border-color: rgba(79,142,247,.4); }
+  .block-loop .block-header { background: rgba(79,142,247,.08); }
+  .block-loop .block-badge { background: rgba(79,142,247,.2); color: var(--accent); }
+
+  /* CONDITION BLOCK */
+  .block-condition { border-color: rgba(247,185,79,.4); }
+  .block-condition .block-header { background: rgba(247,185,79,.08); }
+  .block-condition .block-badge { background: rgba(247,185,79,.2); color: var(--yellow); }
+
+  /* ASSIGN BLOCK */
+  .block-assign { border-color: rgba(62,207,142,.4); }
+  .block-assign .block-header { background: rgba(62,207,142,.08); }
+  .block-assign .block-badge { background: rgba(62,207,142,.2); color: var(--green); }
+
+  /* LOG BLOCK */
+  .block-log { border-color: rgba(123,92,247,.4); }
+  .block-log .block-header { background: rgba(123,92,247,.08); }
+  .block-log .block-badge { background: rgba(123,92,247,.2); color: var(--accent2); }
+
+  /* BREAK BLOCK */
+  .block-break { border-color: rgba(247,86,79,.4); }
+  .block-break .block-header { background: rgba(247,86,79,.08); }
+  .block-break .block-badge { background: rgba(247,86,79,.2); color: var(--red); }
+
+  /* NESTED AREA */
+  .nested-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text3);
+    margin-bottom: 6px;
+    margin-top: 4px;
+  }
+  .nested-area {
+    background: rgba(0,0,0,.25);
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    padding: 8px;
+    min-height: 48px;
+  }
+
+  /* FORM FIELDS */
+  .field-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .field-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+    color: var(--text3);
+    min-width: 60px;
+  }
+  .field-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 10px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: var(--mono);
+    outline: none;
+    transition: border .15s;
+    flex: 1;
+    min-width: 100px;
+  }
+  .field-input:focus { border-color: var(--accent); }
+  .field-select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 10px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: var(--mono);
+    outline: none;
+    cursor: pointer;
+    flex: 1;
+    min-width: 80px;
+  }
+  .field-select:focus { border-color: var(--accent); }
+
+  /* RIGHT PANEL - CODE */
+  .code-panel {
+    width: 400px;
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    background: var(--surface);
+  }
+
+  .code-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .code-header-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text2);
+    text-transform: uppercase;
+    letter-spacing: .8px;
+  }
+  .lang-badge {
+    font-size: 10px;
+    font-weight: 700;
+    background: rgba(79,142,247,.2);
+    color: var(--accent);
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin-left: auto;
+  }
+
+  .code-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+
+  pre {
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.7;
+    color: #c8d4f0;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* Syntax highlight colors */
+  .kw { color: #7b9cf7; }
+  .kw2 { color: #c77dff; }
+  .str { color: #7ec8a0; }
+  .num { color: #f9c97c; }
+  .cmt { color: #4a5a80; font-style: italic; }
+  .fn { color: #7eb8f7; }
+  .var { color: #e2e8f8; }
+  .op { color: #8aa4d0; }
+  .type { color: #f7b94f; }
+
+  .code-footer {
+    padding: 10px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+  }
+
+  /* Empty state for code */
+  .code-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 8px;
+    color: var(--text3);
+    font-size: 13px;
+    text-align: center;
+  }
+  .code-empty-icon { font-size: 32px; margin-bottom: 4px; }
+
+  /* Scroll */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--border2); }
+
+  .sep {
+    height: 1px;
+    background: var(--border);
+    margin: 6px 12px;
+  }
+
+  /* Add nested button */
+  .btn-add-nested {
+    background: none;
+    border: 1px dashed var(--border);
+    color: var(--text3);
+    font-size: 11px;
+    font-family: var(--sans);
+    padding: 5px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 6px;
+    transition: all .15s;
+  }
+  .btn-add-nested:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(79,142,247,.05);
+  }
+
+  .badge-count {
+    font-size: 10px;
+    background: var(--surface3);
+    color: var(--text3);
+    border-radius: 10px;
+    padding: 1px 7px;
+    font-family: var(--mono);
+  }
+
+  /* TABS in code panel */
+  .code-tabs { display:flex; gap:2px; padding:8px 16px 0; border-bottom:1px solid var(--border); }
+  .code-tab {
+    font-size:11px;
+    font-weight:600;
+    padding:5px 14px;
+    border-radius:5px 5px 0 0;
+    cursor:pointer;
+    color:var(--text3);
+    border:1px solid transparent;
+    border-bottom:none;
+    transition:.15s;
+  }
+  .code-tab.active {
+    background:var(--bg);
+    color:var(--text);
+    border-color:var(--border);
+  }
+  .code-tab:not(.active):hover { color:var(--text2); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">MACRO<span>BUILDER</span></div>
+  <div class="header-tabs">
+    <div class="header-tab active">Конструктор</div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-ghost" onclick="clearAll()">Очистить</button>
+    <button class="btn btn-ghost" onclick="loadExample()">Пример</button>
+    <button class="btn btn-primary" onclick="generateCode()">⚡ Генерировать TypeScript</button>
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- PALETTE -->
+  <div class="palette">
+    <div class="palette-section">
+      <div class="palette-title">Управление</div>
+      <div class="palette-item" draggable="true" ondragstart="onDragStart(event,'loop')">
+        <div class="pi-icon pi-loop">🔁</div>
+        Цикл for
+      </div>
+      <div class="palette-item" draggable="true" ondragstart="onDragStart(event,'foreach')">
+        <div class="pi-icon pi-loop">📋</div>
+        Цикл forEach
+      </div>
+      <div class="palette-item" draggable="true" ondragstart="onDragStart(event,'while')">
+        <div class="pi-icon pi-loop">🔄</div>
+        Цикл while
+      </div>
+    </div>
+    <div class="sep"></div>
+    <div class="palette-section">
+      <div class="palette-title">Условия</div>
+      <div class="palette-item" draggable="true" ondragstart="onDragStart(event,'if')">
+        <div class="pi-icon pi-cond">❓</div>
+        Если (if)
+      </div>
+      <div class="palette-item" draggable="true" ondragstart="onDragStart(event,'ifelse')">
+        <div class="pi-icon pi-cond">↔️</div>
+        Если / Иначе
+      </div>
+    </div>
+    <div class="sep"></div>
+    <div class="palette-section">
+      <div class="palette-title">Операции</div>
+      <div class="palette-item" draggable="true" ondragstart="onDragStart(event,'assign')">
+        <div class="pi-icon pi-assign">✏️</div>
+        Присвоение
+      </div>
+      <div class="palette-item" draggable="true" ondragstart="onDragStart(event,'log')">
+        <div class="pi-icon pi-log">📝</div>
+        Вывод лога
+      </div>
+      <div class="palette-item" draggable="true" ondragstart="onDragStart(event,'break')">
+        <div class="pi-icon pi-break">🛑</div>
+        Прервать (break)
+      </div>
+    </div>
+  </div>
+
+  <!-- CANVAS -->
+  <div class="canvas-wrap">
+    <div class="canvas-toolbar">
+      <span class="canvas-title">Холст макроса</span>
+      <span class="badge-count" id="blockCount">0 блоков</span>
+      <div style="margin-left:auto;font-size:12px;color:var(--text3)">Перетащите блоки из панели слева →</div>
+    </div>
+    <div class="canvas" id="canvas"
+      ondragover="event.preventDefault(); document.getElementById('rootList').classList.add('drag-over')"
+      ondragleave="document.getElementById('rootList').classList.remove('drag-over')"
+      ondrop="onDrop(event, null)">
+      <div id="rootList" class="block-list" ondragover="event.preventDefault();event.stopPropagation();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="onDrop(event, null); event.stopPropagation()">
+        <div id="emptyHint" class="canvas-drop-hint">
+          <span>🧩</span>
+          Перетащите блоки из левой панели, чтобы построить макрос
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CODE PANEL -->
+  <div class="code-panel">
+    <div class="code-tabs">
+      <div class="code-tab active">TypeScript</div>
+    </div>
+    <div class="code-header">
+      <span class="code-header-title">Сгенерированный код</span>
+      <span class="lang-badge">TS</span>
+    </div>
+    <div class="code-area" id="codeArea">
+      <div class="code-empty">
+        <div class="code-empty-icon">💻</div>
+        Добавьте блоки и нажмите<br>«Генерировать TypeScript»
+      </div>
+    </div>
+    <div class="code-footer">
+      <button class="btn btn-ghost" style="flex:1" onclick="copyCode()">📋 Копировать</button>
+      <button class="btn btn-green" style="flex:1" onclick="generateCode()">⚡ Обновить</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let dragType = null;
+let idCounter = 1;
+let blocks = []; // root-level blocks
+
+function uid() { return idCounter++; }
+
+// ─── DRAG & DROP ──────────────────────────────────────────────────────────────
+function onDragStart(e, type) {
+  dragType = type;
+  e.dataTransfer.effectAllowed = 'copy';
+}
+
+function onDrop(e, parentId) {
+  e.preventDefault();
+  e.stopPropagation();
+  document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+  if (!dragType) return;
+  const block = createBlock(dragType);
+  if (parentId === null) {
+    blocks.push(block);
+  } else {
+    const parent = findBlock(blocks, parentId);
+    if (parent) {
+      parent.children = parent.children || [];
+      parent.children.push(block);
+    }
+  }
+  dragType = null;
+  render();
+  generateCode();
+}
+
+// ─── BLOCK FACTORY ───────────────────────────────────────────────────────────
+function createBlock(type) {
+  const id = uid();
+  const defaults = {
+    loop:    { id, type: 'loop',    label:'for',     varName:'i', from:'0', to:'10', step:'1', children:[] },
+    foreach: { id, type: 'foreach', label:'forEach', arrayVar:'users', itemVar:'user', children:[] },
+    while:   { id, type: 'while',   label:'while',   condition:'i < 10', children:[] },
+    if:      { id, type: 'if',      label:'if',      condition:'user.gender === "male"', children:[] },
+    ifelse:  { id, type: 'ifelse',  label:'if/else', condition:'user.age >= 18', thenChildren:[], elseChildren:[] },
+    assign:  { id, type: 'assign',  label:'assign',  variable:'user.salary', op:'+=', value:'5' },
+    log:     { id, type: 'log',     label:'log',     message:'user.name' },
+    break:   { id, type: 'break',   label:'break' },
+  };
+  return defaults[type];
+}
+
+function findBlock(list, id) {
+  for (const b of list) {
+    if (b.id === id) return b;
+    const inChildren = b.children ? findBlock(b.children, id) : null;
+    if (inChildren) return inChildren;
+    const inThen = b.thenChildren ? findBlock(b.thenChildren, id) : null;
+    if (inThen) return inThen;
+    const inElse = b.elseChildren ? findBlock(b.elseChildren, id) : null;
+    if (inElse) return inElse;
+  }
+  return null;
+}
+
+function deleteBlock(id) {
+  function removeFrom(list) {
+    const idx = list.findIndex(b => b.id === id);
+    if (idx !== -1) { list.splice(idx, 1); return true; }
+    for (const b of list) {
+      if (b.children && removeFrom(b.children)) return true;
+      if (b.thenChildren && removeFrom(b.thenChildren)) return true;
+      if (b.elseChildren && removeFrom(b.elseChildren)) return true;
+    }
+    return false;
+  }
+  removeFrom(blocks);
+  render();
+  generateCode();
+}
+
+function updateField(id, field, value) {
+  const b = findBlock(blocks, id);
+  if (b) b[field] = value;
+  generateCode();
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render() {
+  const rootList = document.getElementById('rootList');
+  const hint = document.getElementById('emptyHint');
+  rootList.innerHTML = '';
+  if (blocks.length === 0) {
+    rootList.appendChild(hint);
+    document.getElementById('blockCount').textContent = '0 блоков';
+    return;
+  }
+  const total = countBlocks(blocks);
+  document.getElementById('blockCount').textContent = `${total} блок${plural(total)}`;
+  for (const b of blocks) {
+    rootList.appendChild(renderBlock(b, null));
+  }
+  // re-attach drop zones
+  rootList.ondragover = (e) => { e.preventDefault(); e.stopPropagation(); rootList.classList.add('drag-over'); };
+  rootList.ondragleave = (e) => rootList.classList.remove('drag-over');
+  rootList.ondrop = (e) => { onDrop(e, null); };
+}
+
+function plural(n) {
+  if (n % 10 === 1 && n % 100 !== 11) return '';
+  if (n % 10 >= 2 && n % 10 <= 4 && !(n % 100 >= 12 && n % 100 <= 14)) return 'а';
+  return 'ов';
+}
+function countBlocks(list) {
+  let c = list.length;
+  for (const b of list) {
+    if (b.children) c += countBlocks(b.children);
+    if (b.thenChildren) c += countBlocks(b.thenChildren);
+    if (b.elseChildren) c += countBlocks(b.elseChildren);
+  }
+  return c;
+}
+
+function renderBlock(b, parentId) {
+  const el = document.createElement('div');
+  el.className = `block block-${b.type === 'foreach' || b.type === 'while' ? 'loop' : b.type === 'ifelse' ? 'condition' : b.type}`;
+  el.dataset.id = b.id;
+
+  el.innerHTML = blockHTML(b);
+
+  // Drag support on block header
+  const hdr = el.querySelector('.block-header');
+  hdr.setAttribute('draggable', 'true');
+  hdr.addEventListener('dragstart', (e) => { dragType = b.type; e.stopPropagation(); });
+
+  // nested drop zones
+  el.querySelectorAll('.nested-area').forEach(zone => {
+    const childKey = zone.dataset.childkey;
+    zone.addEventListener('dragover', (e) => { e.preventDefault(); e.stopPropagation(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      zone.classList.remove('drag-over');
+      if (!dragType) return;
+      const block = createBlock(dragType);
+      dragType = null;
+      const parent = findBlock(blocks, b.id);
+      if (parent) {
+        parent[childKey] = parent[childKey] || [];
+        parent[childKey].push(block);
+      }
+      render();
+      generateCode();
+    });
+    // render children into zone
+    const childList = b[childKey] || [];
+    for (const child of childList) {
+      zone.appendChild(renderBlock(child, b.id));
+    }
+  });
+
+  return el;
+}
+
+function blockHTML(b) {
+  const del = `<button class="block-delete" onclick="deleteBlock(${b.id})" title="Удалить">×</button>`;
+  const badges = {
+    loop: 'Цикл for', foreach: 'Цикл forEach', while: 'Цикл while',
+    if: 'Если', ifelse: 'Если / Иначе',
+    assign: 'Присвоение', log: 'Лог', break: 'Break'
+  };
+  const badge = `<span class="block-badge">${badges[b.type] || b.type}</span>`;
+
+  let body = '';
+
+  if (b.type === 'loop') {
+    body = `
+      <div class="block-body">
+        <div class="field-row">
+          <span class="field-label">Переменная</span>
+          <input class="field-input" value="${b.varName}" style="max-width:70px" oninput="updateField(${b.id},'varName',this.value)">
+          <span class="field-label">От</span>
+          <input class="field-input" value="${b.from}" style="max-width:60px" oninput="updateField(${b.id},'from',this.value)">
+          <span class="field-label">До</span>
+          <input class="field-input" value="${b.to}" style="max-width:60px" oninput="updateField(${b.id},'to',this.value)">
+          <span class="field-label">Шаг</span>
+          <input class="field-input" value="${b.step}" style="max-width:60px" oninput="updateField(${b.id},'step',this.value)">
+        </div>
+        <div class="nested-label">Тело цикла</div>
+        <div class="nested-area block-list" data-childkey="children"></div>
+      </div>`;
+  } else if (b.type === 'foreach') {
+    body = `
+      <div class="block-body">
+        <div class="field-row">
+          <span class="field-label">Массив</span>
+          <input class="field-input" value="${b.arrayVar}" oninput="updateField(${b.id},'arrayVar',this.value)">
+          <span class="field-label">Элемент</span>
+          <input class="field-input" value="${b.itemVar}" oninput="updateField(${b.id},'itemVar',this.value)">
+        </div>
+        <div class="nested-label">Тело цикла</div>
+        <div class="nested-area block-list" data-childkey="children"></div>
+      </div>`;
+  } else if (b.type === 'while') {
+    body = `
+      <div class="block-body">
+        <div class="field-row">
+          <span class="field-label">Условие</span>
+          <input class="field-input" value="${b.condition}" oninput="updateField(${b.id},'condition',this.value)">
+        </div>
+        <div class="nested-label">Тело цикла</div>
+        <div class="nested-area block-list" data-childkey="children"></div>
+      </div>`;
+  } else if (b.type === 'if') {
+    body = `
+      <div class="block-body">
+        <div class="field-row">
+          <span class="field-label">Условие</span>
+          <input class="field-input" value="${b.condition}" oninput="updateField(${b.id},'condition',this.value)">
+        </div>
+        <div class="nested-label">Выполнить если истина</div>
+        <div class="nested-area block-list" data-childkey="children"></div>
+      </div>`;
+  } else if (b.type === 'ifelse') {
+    body = `
+      <div class="block-body">
+        <div class="field-row">
+          <span class="field-label">Условие</span>
+          <input class="field-input" value="${b.condition}" oninput="updateField(${b.id},'condition',this.value)">
+        </div>
+        <div class="nested-label">Если истина (then)</div>
+        <div class="nested-area block-list" data-childkey="thenChildren"></div>
+        <div class="nested-label" style="margin-top:10px">Иначе (else)</div>
+        <div class="nested-area block-list" data-childkey="elseChildren"></div>
+      </div>`;
+  } else if (b.type === 'assign') {
+    body = `
+      <div class="block-body">
+        <div class="field-row">
+          <span class="field-label">Переменная</span>
+          <input class="field-input" value="${b.variable}" oninput="updateField(${b.id},'variable',this.value)">
+          <select class="field-select" style="max-width:80px;flex:none" onchange="updateField(${b.id},'op',this.value)">
+            ${['=','+=','-=','*=','/='].map(op => `<option ${b.op===op?'selected':''}>${op}</option>`).join('')}
+          </select>
+          <input class="field-input" value="${b.value}" oninput="updateField(${b.id},'value',this.value)">
+        </div>
+      </div>`;
+  } else if (b.type === 'log') {
+    body = `
+      <div class="block-body">
+        <div class="field-row">
+          <span class="field-label">Выражение</span>
+          <input class="field-input" value="${b.message}" oninput="updateField(${b.id},'message',this.value)">
+        </div>
+      </div>`;
+  } else if (b.type === 'break') {
+    body = `<div class="block-body" style="color:var(--text3);font-size:12px">Прерывает выполнение текущего цикла</div>`;
+  }
+
+  return `<div class="block-header">${badge}${del}</div>${body}`;
+}
+
+// ─── CODE GENERATION ─────────────────────────────────────────────────────────
+function generateCode() {
+  if (blocks.length === 0) {
+    document.getElementById('codeArea').innerHTML = '<div class="code-empty"><div class="code-empty-icon">💻</div>Добавьте блоки и нажмите<br>«Генерировать TypeScript»</div>';
+    return;
+  }
+
+  const lines = [];
+  lines.push('// Автоматически сгенерировано MacroBuilder\n');
+  genBlocks(blocks, lines, 0);
+
+  const highlighted = highlight(lines.join('\n'));
+  document.getElementById('codeArea').innerHTML = `<pre>${highlighted}</pre>`;
+}
+
+function indent(level) { return '  '.repeat(level); }
+
+function genBlocks(list, lines, level) {
+  for (const b of list) {
+    genBlock(b, lines, level);
+  }
+}
+
+function genBlock(b, lines, level) {
+  const ind = indent(level);
+
+  if (b.type === 'loop') {
+    lines.push(`${ind}for (let ${b.varName} = ${b.from}; ${b.varName} < ${b.to}; ${b.varName} += ${b.step}) {`);
+    genBlocks(b.children || [], lines, level + 1);
+    lines.push(`${ind}}`);
+  } else if (b.type === 'foreach') {
+    lines.push(`${ind}for (const ${b.itemVar} of ${b.arrayVar}) {`);
+    genBlocks(b.children || [], lines, level + 1);
+    lines.push(`${ind}}`);
+  } else if (b.type === 'while') {
+    lines.push(`${ind}while (${b.condition}) {`);
+    genBlocks(b.children || [], lines, level + 1);
+    lines.push(`${ind}}`);
+  } else if (b.type === 'if') {
+    lines.push(`${ind}if (${b.condition}) {`);
+    genBlocks(b.children || [], lines, level + 1);
+    lines.push(`${ind}}`);
+  } else if (b.type === 'ifelse') {
+    lines.push(`${ind}if (${b.condition}) {`);
+    genBlocks(b.thenChildren || [], lines, level + 1);
+    lines.push(`${ind}} else {`);
+    genBlocks(b.elseChildren || [], lines, level + 1);
+    lines.push(`${ind}}`);
+  } else if (b.type === 'assign') {
+    lines.push(`${ind}${b.variable} ${b.op} ${b.value};`);
+  } else if (b.type === 'log') {
+    lines.push(`${ind}console.log(${b.message});`);
+  } else if (b.type === 'break') {
+    lines.push(`${ind}break;`);
+  }
+}
+
+function highlight(code) {
+  return code
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\b(for|const|let|while|if|else|break|of|in|return|function|class|interface|type|new|this|true|false|null|undefined)\b/g,'<span class="kw">$1</span>')
+    .replace(/\b(console)\b/g,'<span class="fn">$1</span>')
+    .replace(/\.(log|push|forEach|map|filter|find|length)\b/g,'.<span class="fn">$1</span>')
+    .replace(/(\/\/.*)/g,'<span class="cmt">$1</span>')
+    .replace(/("([^"\\]|\\.)*"|'([^'\\]|\\.)*'|`([^`\\]|\\.)*`)/g,'<span class="str">$1</span>')
+    .replace(/\b(\d+)\b/g,'<span class="num">$1</span>')
+    .replace(/([+\-*\/=<>&|!]+)/g,'<span class="op">$1</span>');
+}
+
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+function copyCode() {
+  const pre = document.querySelector('#codeArea pre');
+  if (!pre) return;
+  const text = pre.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = event.target;
+    const orig = btn.textContent;
+    btn.textContent = '✅ Скопировано!';
+    setTimeout(() => btn.textContent = orig, 1500);
+  });
+}
+
+function clearAll() {
+  blocks = [];
+  idCounter = 1;
+  render();
+  generateCode();
+}
+
+function loadExample() {
+  blocks = [];
+  idCounter = 1;
+
+  // Пример: forEach по users, внутри if gender === 'male' -> assign salary += 5, log
+  const foreach1 = createBlock('foreach');
+  foreach1.arrayVar = 'users';
+  foreach1.itemVar = 'user';
+
+  const if1 = createBlock('if');
+  if1.condition = 'user.gender === "male"';
+
+  const assign1 = createBlock('assign');
+  assign1.variable = 'user.salary';
+  assign1.op = '+=';
+  assign1.value = '5';
+
+  const log1 = createBlock('log');
+  log1.message = '`Зарплата ${user.name}: ${user.salary}`';
+
+  if1.children = [assign1, log1];
+  foreach1.children = [if1];
+  blocks = [foreach1];
+
+  render();
+  generateCode();
+}
+
+// init
+render();
+</script>
+</body>
+</html>

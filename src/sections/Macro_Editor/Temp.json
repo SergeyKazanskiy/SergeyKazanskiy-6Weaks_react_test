@@ -1,0 +1,42 @@
+
+  {
+    "node_id": "550e8400-e29b-41d4-a716-446655440000",
+    "node_name": "Цех №1: Насосная группа",
+    "units": [
+      {
+        "unit_name": "Насосная станция охлаждения",
+        "motors": [
+          {
+            "motor_label": "Основной насос",
+            "power": "15.0",
+            "apparatus_list": [
+              {
+                "name": "Автоматический выключатель iC60N",
+                "type": "Выключатель",
+                "selection": { "model": "iC60N 3P 32A", "status": "OK" }
+              },
+              {
+                "name": "Контактор LC1D",
+                "type": "Контактор",
+                "selection": { "model": "LC1D25BL", "status": "OK" }
+              }
+            ]
+          },
+          {
+            "motor_label": "Вспомогательный дренаж",
+            "power": "2.2",
+            "apparatus_list": [
+              {
+                "name": "Автоматический выключатель iC60N",
+                "type": "Выключатель",
+                "selection": { "model": "iC60N 3P 6A", "status": "OK" }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+
+  
+

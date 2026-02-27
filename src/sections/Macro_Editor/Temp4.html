@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>SQL Logic Builder Concept</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; margin: 0; display: flex; height: 100vh; }
+        .sidebar { width: 300px; background: #ffffff; border-right: 1px solid #ddd; padding: 20px; display: flex; flex-direction: column; }
+        .canvas { flex-grow: 1; position: relative; overflow: hidden; background-image: radial-gradient(#d7d7d7 1px, transparent 1px); background-size: 20px 20px; }
+        .node { background: white; border: 2px solid #333; border-radius: 8px; width: 180px; padding: 10px; position: absolute; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .node-header { font-weight: bold; border-bottom: 1px solid #eee; margin-bottom: 8px; padding-bottom: 5px; color: #2563eb; display: flex; justify-content: space-between; }
+        .node-body { font-size: 12px; color: #4b5563; }
+        .connection { position: absolute; border-top: 2px dashed #94a3b8; height: 0; z-index: 0; }
+        .sql-preview { height: 250px; background: #1e1e1e; color: #d4d4d4; padding: 15px; font-family: 'Consolas', monospace; font-size: 13px; overflow-y: auto; border-top: 4px solid #2563eb; }
+        .tag { background: #e0e7ff; color: #4338ca; padding: 2px 6px; border-radius: 4px; font-size: 10px; }
+        h3 { margin-top: 0; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <h3>Библиотека блоков</h3>
+    <div style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 10px; margin-bottom: 10px; cursor: grab;">
+        <strong>📦 Источник (Table)</strong><br><small>Выбор таблицы Supabase</small>
+    </div>
+    <div style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 10px; margin-bottom: 10px; cursor: grab;">
+        <strong>🔄 Развертка (Unnest)</strong><br><small>flatMap для JSON-массива</small>
+    </div>
+    <div style="background: #f9fafb; border: 1px solid #e5e7eb; padding: 10px; margin-bottom: 10px; cursor: grab;">
+        <strong>⚡ Подбор (RPC)</strong><br><small>Вызов функции выбора</small>
+    </div>
+    <div style="flex-grow: 1;"></div>
+    <button style="background: #2563eb; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold;">Сгенерировать RPC</button>
+</div>
+
+<div style="flex-grow: 1; display: flex; flex-direction: column;">
+    <div class="canvas">
+        <!-- Node 1 -->
+        <div class="node" style="top: 50px; left: 50px; border-color: #2563eb;">
+            <div class="node-header"><span>Источник</span> <span class="tag">Table</span></div>
+            <div class="node-body">Таблица: <b>tech_nodes</b><br>Вход: <b>node_id</b></div>
+        </div>
+
+        <!-- Node 2 -->
+        <div class="node" style="top: 50px; left: 300px; border-color: #059669;">
+            <div class="node-header"><span>Оборудование</span> <span class="tag">JSON</span></div>
+            <div class="node-body">Поле: <b>equipment</b><br>Тип: <i>Lateral Unnest</i></div>
+        </div>
+
+        <!-- Node 3 -->
+        <div class="node" style="top: 200px; left: 300px; border-color: #059669;">
+            <div class="node-header"><span>Двигатели</span> <span class="tag">JSON</span></div>
+            <div class="node-body">Поле: <b>motors</b><br>Из: <i>Оборудование</i></div>
+        </div>
+
+        <!-- Node 4 -->
+        <div class="node" style="top: 200px; left: 550px; border-color: #d97706;">
+            <div class="node-header"><span>Электрика</span> <span class="tag">RPC</span></div>
+            <div class="node-body">Функция: <b>pick_app</b><br>Аргумент: <i>motor.power</i></div>
+        </div>
+
+        <!-- Visual Connections -->
+        <div class="connection" style="width: 70px; top: 85px; left: 230px;"></div>
+        <div class="connection" style="width: 2px; height: 50px; top: 150px; left: 390px; border-left: 2px dashed #94a3b8; border-top: none;"></div>
+        <div class="connection" style="width: 70px; top: 235px; left: 480px;"></div>
+    </div>
+
+    <div class="sql-preview">
+<span style="color: #569cd6;">CREATE OR REPLACE FUNCTION</span> generated_logic(node_id UUID)<br>
+<span style="color: #569cd6;">RETURNS</span> JSONB <span style="color: #569cd6;">AS</span> $$<br>
+&nbsp;&nbsp;<span style="color: #569cd6;">WITH</span> <span style="color: #ce9178;">flat_data</span> <span style="color: #569cd6;">AS</span> (<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">SELECT</span> unit, motor <span style="color: #569cd6;">FROM</span> tech_nodes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">CROSS JOIN LATERAL</span> jsonb_array_elements(equipment) <span style="color: #569cd6;">AS</span> unit<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">CROSS JOIN LATERAL</span> jsonb_array_elements(unit->'motors') <span style="color: #569cd6;">AS</span> motor<br>
+&nbsp;&nbsp;)<br>
+&nbsp;&nbsp;... (автогенерация на основе Zustand стора)<br>
+$$ <span style="color: #569cd6;">LANGUAGE</span> plpgsql;
+    </div>
+</div>
+
+</body>
+</html>

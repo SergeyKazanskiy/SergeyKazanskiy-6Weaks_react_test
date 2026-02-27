@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .canvas { 
+            width: 800px; height: 500px; /* Приблизительно 12x8 см на экране */
+            background: #f8fafc; border: 2px solid #e2e8f0; position: relative; overflow: hidden;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 15px 15px;
+        }
+        .node { background: white; border: 1px solid #64748b; border-radius: 4px; padding: 6px; font-size: 11px; position: absolute; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .node-title { font-weight: bold; border-bottom: 1px solid #f1f5f9; margin-bottom: 4px; color: #1e293b; }
+        .node-func { color: #64748b; font-style: italic; font-size: 10px; }
+        .group-node { background: rgba(224, 231, 255, 0.4); border: 1px dashed #818cf8; }
+        .arrow { position: absolute; height: 2px; background: #94a3b8; }
+        .active { border: 2px solid #3b82f6; ring: 2px ring-blue-100; }
+        .code-area { background: #1e1e1e; color: #d4d4d4; font-family: monospace; font-size: 10px; padding: 8px; height: 100px; overflow-y: auto; }
+    </style>
+</head>
+<body class="p-4 bg-gray-100">
+
+    <div class="canvas mx-auto rounded-lg shadow-inner">
+        <!-- 1. raw_signals -->
+        <div class="node active" style="top: 40px; left: 20px; width: 130px;">
+            <div class="node-title text-blue-600">raw_signals</div>
+            <div class="node-func">Извлечение (Extract)</div>
+            <div class="text-[9px]">JSON -> Плоский список</div>
+        </div>
+        <div class="arrow" style="width: 40px; top: 65px; left: 150px;"></div>
+
+        <!-- 2. addressed -->
+        <div class="node" style="top: 40px; left: 190px; width: 130px;">
+            <div class="node-title text-emerald-600">addressed</div>
+            <div class="node-func">Адресация (Map)</div>
+            <div class="text-[9px]">Расчет S-M-T индексов</div>
+        </div>
+        <div class="arrow" style="width: 40px; top: 65px; left: 320px;"></div>
+
+        <!-- 3. hierarchy (Nested Group) -->
+        <div class="node group-node" style="top: 20px; left: 360px; width: 280px; height: 160px;">
+            <div class="node-title text-indigo-700">hierarchy (Multilevel)</div>
+            <div class="node-func text-indigo-500">Группировка (Aggregation)</div>
+            
+            <!-- Sub-node: m_group -->
+            <div class="node" style="top: 40px; left: 20px; width: 110px; border-color: #a5b4fc;">
+                <div class="node-title">m_group</div>
+                <div class="node-func">SELECT jsonb_agg</div>
+                <div class="text-[9px]">Tags -> Module</div>
+            </div>
+
+            <!-- Sub-node: h_final -->
+            <div class="node" style="top: 40px; left: 150px; width: 110px; border-color: #a5b4fc;">
+                <div class="node-title">s_group</div>
+                <div class="node-func">SELECT jsonb_agg</div>
+                <div class="text-[9px]">Modules -> Section</div>
+            </div>
+            
+            <div class="arrow" style="width: 20px; top: 60px; left: 130px; background: #a5b4fc;"></div>
+        </div>
+        <div class="arrow" style="width: 40px; top: 100px; left: 640px;"></div>
+
+        <!-- 4. ФИНАЛ -->
+        <div class="node" style="top: 75px; left: 680px; width: 100px; border-color: #f59e0b;">
+            <div class="node-title text-amber-600">ФИНАЛ</div>
+            <div class="node-func">Вывод (Return)</div>
+            <div class="text-[9px]">JSON Array</div>
+        </div>
+
+        <!-- Code Preview Area -->
+        <div class="absolute bottom-0 left-0 right-0 border-t-2 border-blue-500">
+            <div class="bg-gray-200 px-2 py-1 text-[10px] font-bold text-gray-700">СОДЕРЖИМОЕ НОДЫ: raw_signals</div>
+            <div class="code-area">
+                SELECT unit->>'name' || '_' || sensor->>'tag' as tag<br>
+                FROM tech_nodes tn<br>
+                CROSS JOIN LATERAL jsonb_array_elements(tn.equipment) AS unit<br>
+                CROSS JOIN LATERAL jsonb_array_elements(unit->'sensors') AS sensor<br>
+                WHERE tn.id = node_id
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
